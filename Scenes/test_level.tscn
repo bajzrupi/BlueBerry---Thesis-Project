@@ -1,0 +1,58 @@
+[gd_scene load_steps=11 format=3 uid="uid://dllc1hgrp2dbe"]
+
+[ext_resource type="Script" uid="uid://cff1ie4o5a17i" path="res://Scripts/test_level.gd" id="1_eglq2"]
+[ext_resource type="PackedScene" uid="uid://cdx4jnrywektk" path="res://Scenes/player.tscn" id="1_gojnm"]
+[ext_resource type="PackedScene" uid="uid://c5cfep0vvjl7j" path="res://Scenes/biome.tscn" id="2_dtjkg"]
+[ext_resource type="PackedScene" uid="uid://c8u5qb8nphfrk" path="res://Scenes/plant.tscn" id="4_rsyfn"]
+[ext_resource type="Texture2D" uid="uid://b5mrrxt0ehltf" path="res://Assets/Sprites/cell_highlight_32.png" id="5_7w7ni"]
+[ext_resource type="Resource" uid="uid://q7wakjeksb1p" path="res://Data/Cactus.tres" id="5_btda1"]
+[ext_resource type="Texture2D" uid="uid://c6yajjw2o0sdr" path="res://Assets/Sprites/cell_highlight_64x32.png" id="7_xq3o0"]
+[ext_resource type="PackedScene" uid="uid://dsk058cfd37yi" path="res://Scenes/ToolBar.tscn" id="8_2yvf5"]
+[ext_resource type="PackedScene" uid="uid://c54f87py1ndw5" path="res://Scenes/NightOverlay.tscn" id="9_3ihge"]
+[ext_resource type="PackedScene" uid="uid://gt4b80acc3ka" path="res://Scenes/WeatherVFX.tscn" id="10_akkqd"]
+
+[node name="TestLevel" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_eglq2")
+
+[node name="WorldObjects" type="Node2D" parent="."]
+
+[node name="Entities" type="Node2D" parent="WorldObjects"]
+y_sort_enabled = true
+
+[node name="Plants" type="Sprite2D" parent="WorldObjects/Entities"]
+y_sort_enabled = true
+
+[node name="Player" parent="WorldObjects/Entities" instance=ExtResource("1_gojnm")]
+position = Vector2(329, 302)
+plant_scene = ExtResource("4_rsyfn")
+tilemap_path = NodePath("../../../Biome/GroundTileMap")
+plants_parent_path = NodePath("..")
+cell_highlight_1x1_path = NodePath("../../../Overlays/CellHighlight")
+cell_highlight_2x1_path = NodePath("../../../Overlays/CellHighlight2x1")
+selected_data = ExtResource("5_btda1")
+
+[node name="Biome" parent="." instance=ExtResource("2_dtjkg")]
+position = Vector2(-21, -148)
+
+[node name="Overlays" type="Node2D" parent="."]
+
+[node name="CellHighlight" type="Sprite2D" parent="Overlays"]
+visible = false
+z_index = 1000
+texture = ExtResource("5_7w7ni")
+
+[node name="CellHighlight2x1" type="Sprite2D" parent="Overlays"]
+visible = false
+z_index = 1000
+texture = ExtResource("7_xq3o0")
+
+[node name="ToolBar" parent="." instance=ExtResource("8_2yvf5")]
+layer = 3
+
+[node name="NightOverlay" parent="." instance=ExtResource("9_3ihge")]
+layer = 2
+
+[node name="WeatherVFX" parent="." instance=ExtResource("10_akkqd")]
+
+[editable path="Biome"]

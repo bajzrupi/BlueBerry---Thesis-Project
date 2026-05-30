@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=4 format=3 uid="uid://q7wakjeksb1p"]
+
+[ext_resource type="Script" uid="uid://bdmssfipp160p" path="res://Scripts/PlantData.gd" id="1_tfdw0"]
+[ext_resource type="Texture2D" uid="uid://co7hkkyuuqhjw" path="res://Assets/Sprites/Environments/plants.png" id="2_sx65f"]
+[ext_resource type="Texture2D" uid="uid://d3wswwo2yk1uq" path="res://Assets/Sprites/Environments/terrain.png" id="3_pmrlx"]
+
+[resource]
+script = ExtResource("1_tfdw0")
+display_name = "Plant"
+stage_textures = Array[Texture2D]([ExtResource("2_sx65f"), ExtResource("3_pmrlx"), ExtResource("3_pmrlx")])
+stage_regions = Array[Rect2]([Rect2(64, 160, 32, 32), Rect2(480, 704, 32, 32), Rect2(512, 576, 64, 64)])
+max_stage = 2
+base_sprite_offset_y = -10.0
+footprint_size = Vector2i(2, 1)
+footprint_origin = Vector2i(0, 0)
+allowed_soils = Array[String](["sandy"])
+optimal_moisture_min = 0.15
+optimal_moisture_max = 0.45
+optimal_nutrients_min = 0.2
+optimal_nutrients_max = 0.6
+optimal_ph_min = 6.0
+optimal_ph_max = 7.5
+max_health = 100.0
+health_recover_per_hour = 0.4
+health_decay_per_hour = 1.0
+growth_factor_outside_range = 0.45
+days_to_next_stage = Array[float]([4.0, 6.0])
+pest_resistance = 0.35
+disease_resistance = 0.3
+optimal_temp_min = 18.0
+optimal_temp_max = 35.0
+optimal_humidity_min = 0.1
+optimal_humidity_max = 0.45
+optimal_light_min = 0.7
+optimal_light_max = 1.0
+metadata/_custom_type_script = "uid://bdmssfipp160p"

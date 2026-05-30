@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://c54f87py1ndw5"]
+
+[ext_resource type="Script" uid="uid://1s7x6j3qo5w5" path="res://Scripts/NightOverlay.gd" id="1_42xjs"]
+
+[node name="NightOverlay" type="CanvasLayer"]
+script = ExtResource("1_42xjs")
+
+[node name="Fade" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)

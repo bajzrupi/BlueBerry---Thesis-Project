@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://dsk058cfd37yi"]
+
+[ext_resource type="Script" uid="uid://3atwwjwfxo1w" path="res://Scripts/tool_bar.gd" id="1_1gdwh"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_1gdwh")
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(0, 80)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

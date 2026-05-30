@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://gt4b80acc3ka"]
+
+[ext_resource type="Script" uid="uid://cxk0jhjwsuuxv" path="res://Scripts/WeatherVFX.gd" id="1_30xm8"]
+
+[node name="WeatherVFX" type="CanvasLayer"]
+script = ExtResource("1_30xm8")
+
+[node name="Rain" type="CPUParticles2D" parent="."]
+emitting = false
+
+[node name="Snow" type="CPUParticles2D" parent="."]
+emitting = false
