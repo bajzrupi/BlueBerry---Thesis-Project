@@ -1,10 +1,10 @@
-[gd_scene load_steps=48 format=3 uid="uid://cdx4jnrywektk"]
+[gd_scene format=3 uid="uid://cdx4jnrywektk"]
 
 [ext_resource type="Script" uid="uid://cvjptflqs06q6" path="res://Scripts/player.gd" id="1_fkybt"]
-[ext_resource type="Texture2D" uid="uid://6komtn47dc3e" path="res://Assets/Sprites/Characters/Male/walk_down_fixed.png" id="2_cvnsp"]
-[ext_resource type="Texture2D" uid="uid://dwitku2rkqgh" path="res://Assets/Sprites/Characters/Male/walk_left_fixed.png" id="3_fkybt"]
-[ext_resource type="Texture2D" uid="uid://mtbs0mwvipxu" path="res://Assets/Sprites/Characters/Male/walk_right_fixed.png" id="4_x3wgy"]
-[ext_resource type="Texture2D" uid="uid://dj6paabomn7d6" path="res://Assets/Sprites/Characters/Male/walk_up_fixed.png" id="5_3smsa"]
+[ext_resource type="Texture2D" uid="uid://vl7kl2gkbuj" path="res://Assets/Sprites/Characters/Male/walk_down_fixed.png" id="2_cvnsp"]
+[ext_resource type="Texture2D" uid="uid://veu153wll7mo" path="res://Assets/Sprites/Characters/Male/walk_left_fixed.png" id="3_fkybt"]
+[ext_resource type="Texture2D" uid="uid://delkkeshoubxg" path="res://Assets/Sprites/Characters/Male/walk_right_fixed.png" id="4_x3wgy"]
+[ext_resource type="Texture2D" uid="uid://c74cm8t8jgi62" path="res://Assets/Sprites/Characters/Male/walk_up_fixed.png" id="5_3smsa"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sbwqj"]
 atlas = ExtResource("2_cvnsp")
@@ -172,7 +172,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_sbwqj")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Idle_Down",
 "speed": 10.0
 }, {
@@ -180,7 +180,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_xwi16")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Idle_Left",
 "speed": 10.0
 }, {
@@ -188,7 +188,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_sweqm")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Idle_Right",
 "speed": 10.0
 }, {
@@ -196,7 +196,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ph33w")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Idle_Up",
 "speed": 5.0
 }, {
@@ -228,7 +228,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gymyn")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Walk_Down",
 "speed": 10.0
 }, {
@@ -260,7 +260,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_l6n3p")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Walk_Left",
 "speed": 10.0
 }, {
@@ -292,7 +292,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_83xs0")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Walk_Right",
 "speed": 10.0
 }, {
@@ -324,7 +324,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_qpa8y")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Walk_Up",
 "speed": 10.0
 }]
@@ -332,22 +332,48 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fkybt"]
 size = Vector2(14, 16.5)
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" unique_id=1712992471]
 y_sort_enabled = true
 script = ExtResource("1_fkybt")
+speed = null
+tilemap_path = null
+plants_parent_path = null
+cell_highlight_1x1_path = null
+cell_highlight_2x1_path = null
+plantable_layer_name = null
+plant_range_cells = null
+plant_y_offset = null
+water_amount = null
+fertilizer_amount = null
+lime_amount = null
+acid_amount = null
+pesticide_amount = null
+fungicide_amount = null
+fx_enabled = null
+fx_duration = null
+particles_enabled = null
+invalid_feedback_enabled = null
+invalid_shake_duration = null
+invalid_shake_pixels = null
+invalid_flash_duration = null
+invalid_fx_color = null
+debug_log = null
+character_debug_toggle_enabled = null
+highlight_ok = null
+highlight_bad = null
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1039035660]
 position = Vector2(0, 1)
 sprite_frames = SubResource("SpriteFrames_gymyn")
 animation = &"Idle_Up"
 centered = false
 offset = Vector2(-28, -64)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=81577458]
 position = Vector2(4, -16)
 shape = SubResource("RectangleShape2D_fkybt")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=508487676]
 zoom = Vector2(1.6, 1.6)
 position_smoothing_enabled = true
 position_smoothing_speed = 12.0

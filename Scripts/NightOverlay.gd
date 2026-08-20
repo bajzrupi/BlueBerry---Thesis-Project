@@ -17,7 +17,7 @@ extends CanvasLayer
 
 
 # Overlay runtime logging
-@export var debug_log: bool = true
+@export var debug_log: bool = false
 @export var debug_log_every_minutes: int = 60
 
 var _last_logged_minute: int = -999999
@@ -31,7 +31,7 @@ func _ready() -> void:
 
 # Update overlay alpha every frame (and optionally print status)
 func _process(delta: float) -> void:
-	var light := BiomeSystem.global_light
+	var light = BiomeSystem.global_light
 	var target := _target_alpha(light)
 
 

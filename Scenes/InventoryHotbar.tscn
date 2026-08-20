@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cph5ad2j2cls5"]
+
+[ext_resource type="Script" uid="uid://boeeju2031sat" path="res://Scripts/InventoryHotbar.gd" id="1_eln20"]
+
+[node name="InventoryHotbar" type="CanvasLayer" unique_id=441936472]
+script = ExtResource("1_eln20")

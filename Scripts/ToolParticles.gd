@@ -1,7 +1,7 @@
 extends Node
 
 # Tool particle generator and effect presets
-@export var debug_log: bool = true
+@export var debug_log: bool = false
 
 var _dot_tex: Texture2D
 
@@ -108,6 +108,37 @@ func spawn_water(world_pos: Vector2, cell_px: Vector2, scale_cells: Vector2) -> 
 		0.5, 0.9
 	)
 
+# Spawn a directional sprinkler-water burst.
+# Unlike the watering-can effect, this uses very low screen-space gravity so
+# the selected radial direction remains visually readable in a top-down view.
+func spawn_sprinkler_water(
+	world_pos: Vector2,
+	cell_px: Vector2,
+	scale_cells: Vector2,
+	direction: Vector2
+) -> void:
+	var normalized_direction: Vector2 = direction.normalized()
+
+	if normalized_direction.length_squared() <= 0.0001:
+		normalized_direction = Vector2.DOWN
+
+	_spawn_particles(
+		world_pos,
+		Color(0.3, 0.6, 1.0, 0.85),
+		cell_px,
+		scale_cells,
+		int(10 * scale_cells.x * scale_cells.y),
+		0.42,
+		normalized_direction,
+		12.0,
+		95.0,
+		175.0,
+		Vector2(0, 45),
+		0.45,
+		0.80
+	)
+
+
 # Spawn fertilizing particle effect
 func spawn_fertilize(world_pos: Vector2, cell_px: Vector2, scale_cells: Vector2) -> void:
 	_spawn_particles(
@@ -196,4 +227,19 @@ func spawn_shovel(world_pos: Vector2, cell_px: Vector2, scale_cells: Vector2) ->
 		60.0, 180.0,
 		Vector2(0, 780),
 		0.6, 1.1
+	)
+
+# Spawn harvest reward particle effect
+func spawn_harvest(world_pos: Vector2, cell_px: Vector2, scale_cells: Vector2) -> void:
+	_spawn_particles(
+		world_pos,
+		Color(1.0, 0.85, 0.25, 0.95),
+		cell_px, scale_cells,
+		int(22 * scale_cells.x * scale_cells.y),
+		0.60,
+		Vector2(0, -1),
+		70.0,
+		70.0, 190.0,
+		Vector2(0, 260),
+		0.65, 1.15
 	)

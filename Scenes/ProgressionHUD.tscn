@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b7dx7jb2puitg"]
+
+[ext_resource type="Script" uid="uid://b7nk3l1ke4k0w" path="res://Scripts/ProgressionHUD.gd" id="1_s6abn"]
+
+[node name="ProgressionHud" type="CanvasLayer" unique_id=1930034653]
+script = ExtResource("1_s6abn")

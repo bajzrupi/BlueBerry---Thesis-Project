@@ -1,6 +1,8 @@
 extends Node2D
 
 signal died(plant: Node2D)
+signal harvest_readiness_changed(plant: Node2D, ready: bool)
+signal harvested(plant: Node2D, item_id: StringName, yield_amount: int, regrows: bool)
 
 # Plant runtime state, tuning parameters, and optional logging
 @export var data: PlantData
@@ -14,16 +16,19 @@ var stage: int = 0
 var health: float = 100.0
 var _growth_hours_accum: float = 0.0
 
+# Stores the last emitted harvest-ready state.
+var _harvest_ready_state: bool = false
+
 
 var pest_level: float = 0.0
 var disease_level: float = 0.0
 
 
 var is_dead: bool = false
-@export var debug_death: bool = true
+@export var debug_death: bool = false
 
 
-@export var debug_log: bool = true
+@export var debug_log: bool = false
 @export var debug_log_every_minutes: int = 60
 
 
@@ -41,12 +46,12 @@ var status_label: Label
 
 
 # Infection parameters
-@export var pest_seed_per_hour: float = 0.03
-@export var disease_seed_per_hour: float = 0.02
-@export var pest_growth_per_hour: float = 0.08
-@export var disease_growth_per_hour: float = 0.06
-@export var pest_natural_recovery_per_hour: float = 0.01
-@export var disease_natural_recovery_per_hour: float = 0.006
+@export var pest_seed_per_hour: float = 0.06
+@export var disease_seed_per_hour: float = 0.05
+@export var pest_growth_per_hour: float = 0.10
+@export var disease_growth_per_hour: float = 0.08
+@export var pest_natural_recovery_per_hour: float = 0.004
+@export var disease_natural_recovery_per_hour: float = 0.003
 
 
 
@@ -73,6 +78,7 @@ func _ready() -> void:
 		health = data.max_health
 
 	_apply_stage()
+	_refresh_harvest_readiness()
 	_create_status_label()
 
 	# Update visuals, markers, and periodic logging
@@ -125,6 +131,149 @@ func receive_disease_seed(amount: float) -> void:
 	disease_level = clamp(disease_level + amount, 0.0, 1.0)
 
 
+# Return whether the living plant reached its final growth stage.
+func is_ready_to_harvest() -> bool:
+	return data != null and not is_dead and stage >= data.max_stage
+
+
+# Harvest the mature plant and apply its configured post-harvest state.
+func harvest(reward_yield: int = 1) -> Dictionary:
+	if data == null:
+		return {
+			"ok": false,
+			"reason": "NO_PLANT_DATA"
+		}
+
+	if is_dead:
+		return {
+			"ok": false,
+			"reason": "PLANT_DEAD"
+		}
+
+	if not is_ready_to_harvest():
+		return {
+			"ok": false,
+			"reason": "PLANT_NOT_READY"
+		}
+
+	if data.harvest_item_id == &"":
+		return {
+			"ok": false,
+			"reason": "NO_HARVEST_ITEM_ID"
+		}
+
+	# Use the mastery/health-adjusted reward supplied by the Player.
+	# A severely unhealthy plant may legitimately yield zero seeds.
+	var yield_amount := maxi(reward_yield, 0)
+	var previous_stage := stage
+	var regrows := data.regrows_after_harvest
+	var next_stage := -1
+
+	if regrows:
+		next_stage = maxi(data.max_stage - 1, 0)
+		stage = next_stage
+		_growth_hours_accum = 0.0
+
+		_apply_stage()
+		_refresh_harvest_readiness()
+		_update_visual()
+		_refresh_status_from_zone()
+	else:
+		_harvest_ready_state = false
+		harvest_readiness_changed.emit(self, false)
+
+	harvested.emit(
+		self,
+		data.harvest_item_id,
+		yield_amount,
+		regrows
+	)
+
+	if debug_log:
+		print(
+			"[Harvest] ",
+			data.display_name,
+			" COLLECTED cell=",
+			anchor_cell,
+			" item=",
+			String(data.harvest_item_id),
+			" yield=",
+			yield_amount,
+			" regrows=",
+			regrows,
+			" stage=",
+			previous_stage,
+			"->",
+			next_stage
+		)
+
+	var result := {
+		"ok": true,
+		"item_id": data.harvest_item_id,
+		"yield_amount": yield_amount,
+		"regrows": regrows,
+		"previous_stage": previous_stage,
+		"new_stage": next_stage
+	}
+
+	if not regrows:
+		despawn()
+
+	return result
+
+
+# Emit readiness changes and log the mature state once.
+func _refresh_harvest_readiness(
+	day: int = -1,
+	minute_of_day: int = -1
+) -> void:
+	var ready_now := is_ready_to_harvest()
+
+	if ready_now == _harvest_ready_state:
+		return
+
+	_harvest_ready_state = ready_now
+	harvest_readiness_changed.emit(self, ready_now)
+
+	if not debug_log or data == null:
+		return
+
+	if ready_now:
+		var timing := "initial"
+
+		if day >= 0 and minute_of_day >= 0:
+			var hour := int(float(minute_of_day) / 60.0)
+			var minute := minute_of_day % 60
+			timing = "day=%d time=%02d:%02d" % [day, hour, minute]
+
+		print(
+			"[Harvest] ",
+			data.display_name,
+			" READY cell=",
+			anchor_cell,
+			" stage=",
+			stage,
+			" reward=",
+			String(data.harvest_item_id),
+			" yield=LEVEL_BASED",
+			" regrows=",
+			data.regrows_after_harvest,
+			" ",
+			timing
+		)
+	else:
+		print(
+			"[Harvest] ",
+			data.display_name,
+			" NOT_READY cell=",
+			anchor_cell,
+			" stage=",
+			stage,
+			" dead=",
+			is_dead
+		)
+
+
 # Update infection, environment response, growth, death, visuals, and status marker
 func _on_world_tick(day: int, minute_of_day: int, delta_minutes: int) -> void:
 	if data == null:
@@ -141,11 +290,11 @@ func _on_world_tick(day: int, minute_of_day: int, delta_minutes: int) -> void:
 	# Read zone and climate stats
 
 
-	var moisture := BiomeSystem.get_moisture(anchor_cell)
-	var nutrients := BiomeSystem.get_nutrients(anchor_cell)
-	var ph := BiomeSystem.get_ph(anchor_cell)
-	var pest_pressure := BiomeSystem.get_pest_pressure(anchor_cell)
-	var disease_pressure := BiomeSystem.get_disease_pressure(anchor_cell)
+	var moisture = BiomeSystem.get_moisture(anchor_cell)
+	var nutrients = BiomeSystem.get_nutrients(anchor_cell)
+	var ph = BiomeSystem.get_ph(anchor_cell)
+	var pest_pressure = BiomeSystem.get_pest_pressure(anchor_cell)
+	var disease_pressure = BiomeSystem.get_disease_pressure(anchor_cell)
 
 	var zst: Dictionary = BiomeSystem.get_zone_stats(anchor_cell)
 	var humidity := float(zst.get("humidity", 0.5))
@@ -199,15 +348,15 @@ func _on_world_tick(day: int, minute_of_day: int, delta_minutes: int) -> void:
 
 
 	# Evaluate optimal environmental ranges
-	var moist_ok := (moisture >= data.optimal_moisture_min and moisture <= data.optimal_moisture_max)
-	var nutr_ok := (nutrients >= data.optimal_nutrients_min and nutrients <= data.optimal_nutrients_max)
-	var ph_ok := (ph >= data.optimal_ph_min and ph <= data.optimal_ph_max)
+	var moist_ok = (moisture >= data.optimal_moisture_min and moisture <= data.optimal_moisture_max)
+	var nutr_ok = (nutrients >= data.optimal_nutrients_min and nutrients <= data.optimal_nutrients_max)
+	var ph_ok = (ph >= data.optimal_ph_min and ph <= data.optimal_ph_max)
 
 	var temp_ok := (temperature >= data.optimal_temp_min and temperature <= data.optimal_temp_max)
 	var hum_ok := (humidity >= data.optimal_humidity_min and humidity <= data.optimal_humidity_max)
 	var light_ok := (light >= data.optimal_light_min and light <= data.optimal_light_max)
 
-	var env_good := moist_ok and nutr_ok and ph_ok and temp_ok and hum_ok and light_ok
+	var env_good = moist_ok and nutr_ok and ph_ok and temp_ok and hum_ok and light_ok
 
 
 	var bio_growth_mult := (1.0 - 0.50 * pest_level) * (1.0 - 0.70 * disease_level)
@@ -228,7 +377,7 @@ func _on_world_tick(day: int, minute_of_day: int, delta_minutes: int) -> void:
 			dist += (data.optimal_nutrients_min - nutrients) if nutrients < data.optimal_nutrients_min else (nutrients - data.optimal_nutrients_max)
 
 		if not ph_ok:
-			var ph_dist := (data.optimal_ph_min - ph) if ph < data.optimal_ph_min else (ph - data.optimal_ph_max)
+			var ph_dist = (data.optimal_ph_min - ph) if ph < data.optimal_ph_min else (ph - data.optimal_ph_max)
 			dist += ph_dist / 3.0
 
 		if not temp_ok:
@@ -259,6 +408,7 @@ func _on_world_tick(day: int, minute_of_day: int, delta_minutes: int) -> void:
 		disease_level = 0.0
 		enable_spread = false
 		_growth_hours_accum = 0.0
+		_refresh_harvest_readiness(day, minute_of_day)
 
 		_update_visual()
 		_update_status_marker(moisture, nutrients, ph)
@@ -275,8 +425,17 @@ func _on_world_tick(day: int, minute_of_day: int, delta_minutes: int) -> void:
 	if stage < data.max_stage:
 		var growth_factor := 1.0 if env_good else data.growth_factor_outside_range
 		var health_mult = clamp(health / data.max_health, 0.0, 1.0)
+		var random_event_growth_multiplier: float = (
+			_get_random_event_growth_multiplier()
+		)
 
-		_growth_hours_accum += hours * growth_factor * health_mult * clamp(bio_growth_mult, 0.05, 1.0)
+		_growth_hours_accum += (
+			hours
+			* growth_factor
+			* health_mult
+			* clamp(bio_growth_mult, 0.05, 1.0)
+			* random_event_growth_multiplier
+		)
 
 		while stage < data.max_stage:
 			var need_hours := _hours_to_next_stage(stage, data)
@@ -286,9 +445,29 @@ func _on_world_tick(day: int, minute_of_day: int, delta_minutes: int) -> void:
 			stage += 1
 			_apply_stage()
 
+	_refresh_harvest_readiness(day, minute_of_day)
 	_update_visual()
 	_update_status_marker(moisture, nutrients, ph)
 	_debug_log(day, minute_of_day, moisture, nutrients, ph, temperature, humidity, light, pest_pressure, disease_pressure, env_good)
+
+
+# Returns the random event growth multiplier.
+func _get_random_event_growth_multiplier() -> float:
+	var event_system: Node = get_node_or_null(
+		"/root/RandomEventSystem"
+	)
+
+	if (
+		event_system != null
+		and event_system.has_method("get_plant_growth_multiplier")
+	):
+		return clampf(
+			float(event_system.call("get_plant_growth_multiplier")),
+			0.25,
+			3.0
+		)
+
+	return 1.0
 
 
 # Attempt local plant-to-plant spread based on infection and weather
@@ -404,8 +583,13 @@ func _apply_stage() -> void:
 	sprite.region_enabled = true
 	sprite.region_rect = data.stage_regions[stage]
 
-	var h := sprite.region_rect.size.y
-	sprite.position.y = data.base_sprite_offset_y - (h - BASE_H) * 0.5
+	# Apply plant-specific visual scale.
+	var visual_scale := maxf(data.visual_scale, 0.1)
+	sprite.scale = Vector2.ONE * visual_scale
+
+	# Keep the visible sprite base aligned to the soil.
+	var visual_height := sprite.region_rect.size.y * visual_scale
+	sprite.position.y = data.base_sprite_offset_y + BASE_H * 0.5 - visual_height * 0.5
 
 	_position_status_label()
 
@@ -461,7 +645,28 @@ func _position_status_label() -> void:
 	if sprite.region_enabled:
 		region_h = sprite.region_rect.size.y
 
-	status_label.position = Vector2(-48, sprite.position.y - region_h * 0.5 + status_marker_y_offset)
+	# Position the marker above the scaled sprite.
+	var visual_height := region_h * absf(sprite.scale.y)
+	status_label.position = Vector2(
+		-48,
+		sprite.position.y - visual_height * 0.5 + status_marker_y_offset
+	)
+
+
+# Refresh the status marker from the plant's current biome values.
+func _refresh_status_from_zone() -> void:
+	var moisture = BiomeSystem.get_moisture(anchor_cell)
+	var nutrients = BiomeSystem.get_nutrients(anchor_cell)
+	var ph = BiomeSystem.get_ph(anchor_cell)
+
+	if moisture < 0.0:
+		moisture = 0.5
+	if nutrients < 0.0:
+		nutrients = 0.5
+	if ph < 0.0:
+		ph = 7.0
+
+	_update_status_marker(moisture, nutrients, ph)
 
 
 # Update status label contents from current plant and soil conditions
@@ -478,6 +683,9 @@ func _update_status_marker(moisture: float, nutrients: float, ph: float) -> void
 		return
 
 	var tags: Array[String] = []
+
+	if is_ready_to_harvest():
+		tags.append("READY")
 
 	if moisture < (data.optimal_moisture_min - status_dry_margin):
 		tags.append("DRY")
@@ -509,6 +717,8 @@ func _update_status_marker(moisture: float, nutrients: float, ph: float) -> void
 		status_label.modulate = Color(0.8, 0.7, 1.0, 1.0)
 	elif tags.has("DRY") or tags.has("WET"):
 		status_label.modulate = Color(1.0, 0.95, 0.6, 1.0)
+	elif tags.has("READY"):
+		status_label.modulate = Color(0.55, 1.0, 0.55, 1.0)
 	else:
 		status_label.modulate = Color(1, 1, 1, 1)
 
@@ -535,6 +745,7 @@ func _debug_log(day: int, minute_of_day: int,
 	print(data.display_name, " cell=", anchor_cell,
 		" day=", day, " time=", "%02d:%02d" % [h, m],
 		" stage=", stage,
+		" ready=", is_ready_to_harvest(),
 		" health=", snapped(health, 0.1),
 		" moist=", snapped(moisture, 0.01),
 		" nutr=", snapped(nutrients, 0.01),

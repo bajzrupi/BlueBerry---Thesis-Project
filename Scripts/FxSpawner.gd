@@ -3,7 +3,7 @@ extends Node
 # FX configuration and logging toggle
 @export var fx_scene: PackedScene = preload("res://Scenes/FxBurst.tscn")
 
-@export var debug_log: bool = true
+@export var debug_log: bool = false
 
 # Spawn configured FxBurst at a world position
 func spawn_fx(world_pos: Vector2, tint: Color, cell_scale: Vector2 = Vector2.ONE, duration: float = 0.25) -> void:

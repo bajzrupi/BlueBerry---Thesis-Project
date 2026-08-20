@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dl1i81tuj8g6i"]
+
+[ext_resource type="Script" uid="uid://cqrkp5foq8idn" path="res://Scripts/MoneyHUD.gd" id="1_4y45l"]
+
+[node name="MoneyHud" type="CanvasLayer" unique_id=1779321710]
+script = ExtResource("1_4y45l")

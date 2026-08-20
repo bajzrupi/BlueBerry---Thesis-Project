@@ -7,7 +7,7 @@ extends CanvasLayer
 
 @export var vfx_layer: int = 1
 
-@export var debug_log: bool = true
+@export var debug_log: bool = false
 @export var debug_log_every_seconds: float = 2.0
 var _log_accum := 0.0
 

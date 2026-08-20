@@ -8,11 +8,15 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
-config/name="Gaden"
-run/main_scene="uid://dllc1hgrp2dbe"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/name="BlueBerry"
+run/main_scene="uid://blstrb8xv6o4r"
+config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -24,6 +28,36 @@ PlantRegistry="*res://Scripts/PlantRegistry.gd"
 Toolsystem="*res://Scripts/ToolSystem.gd"
 FxSpawner="*res://Scripts/FxSpawner.gd"
 ToolParticles="*res://Scripts/ToolParticles.gd"
+InventorySystem="*uid://b5q4f7126ojah"
+PlantSelectionSystem="*uid://6l4wq7hllh0w"
+EconomySystem="*uid://beu8dd73md6rb"
+ProgressionSystem="*uid://blfs03gdpsxqt"
+ShopSystem="*uid://cye7rdkjya0vd"
+BuildSystem="*uid://c7gaxyba2w0yj"
+CharacterSystem="*uid://c52hd23ks3js3"
+ItemCatalogSystem="*uid://8oeljaigouma"
+HotbarSystem="*uid://vxgmgqsxckng"
+InventoryLayoutSystem="*uid://yusgwtuuahit"
+MinimapSystem="*uid://so3dyk41a3rj"
+ChestSystem="*uid://5n4ckbgoll75"
+CharacterSelectSystem="*uid://dlw6rata2p5q2"
+WorldBoundsSystem="*uid://bkpeqvibwmq7u"
+GameFlowSystem="*uid://cp4w63s511a50"
+SaveSystem="*uid://xv3fkyoh33df"
+SprinklerSystem="*uid://ckxs2bhxhtfqh"
+ProgressionNotification="*uid://dvihrqc4maky2"
+RepairSystem="*uid://cjg5ih6mqsprn"
+PauseMenuSystem="*uid://rw4f6dcoangh"
+SprinklerInteractionSystem="*uid://dqtfgbwteb0ww"
+RandomEventSystem="*uid://qcu24oskwe4j"
+PlantInspectorSystem="*uid://8c8nmeg0jowh"
+TimeSpeedControlSystem="*uid://bvijpkh6v1l0u"
+FertilizerInjectorSystem="*uid://b36b0hefaemk5"
+FertilizerInjectorInteractionSystem="*uid://bbx78tqpuyc6g"
+SoilNeutralizerInteractionSystem="*uid://c0xbfoot3ud0w"
+SoilNeutralizerSystem="*uid://kk0cayhkpogp"
+PlantProtectionStationInteractionSystem="*uid://dbyegycjx84jh"
+PlantProtectionStationSystem="*uid://bmqrx4k2bsxq2"
 
 [input]
 
@@ -61,9 +95,20 @@ aim_mode={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194328,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
-toggle_tool={
+cycle_plant={
 "deadzone": 0.2,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":81,"key_label":0,"unicode":113,"location":0,"echo":false,"script":null)
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":4,"canceled":false,"pressed":false,"double_click":false,"script":null)
+, Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":5,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
+}
+toggle_inventory={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":73,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+toggle_shop={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":80,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 

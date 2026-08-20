@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dcn0unqhu6q5f"]
+
+[ext_resource type="Script" uid="uid://cmvd5t71g5d8s" path="res://Scripts/BlueBerryRegressionRunner.gd" id="1_52xd0"]
+
+[node name="RegressionTest" type="Node2D" unique_id=1876851691]
+script = ExtResource("1_52xd0")

@@ -1,21 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://c8u5qb8nphfrk"]
+[gd_scene format=3 uid="uid://c8u5qb8nphfrk"]
 
 [ext_resource type="Script" uid="uid://01fvo2wdl82o" path="res://Scripts/plant.gd" id="1_6gypx"]
-[ext_resource type="Texture2D" uid="uid://co7hkkyuuqhjw" path="res://Assets/Sprites/Environments/plants.png" id="1_fgu4o"]
+[ext_resource type="Texture2D" uid="uid://sk0iovy2nnnl" path="res://Assets/Sprites/Environments/plants.png" id="1_fgu4o"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6gypx"]
 size = Vector2(15, 9)
 
-[node name="Plant" type="StaticBody2D"]
+[node name="Plant" type="StaticBody2D" unique_id=1931125027]
 position = Vector2(2, 0)
 script = ExtResource("1_6gypx")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=331047486]
 position = Vector2(0, -10)
 texture = ExtResource("1_fgu4o")
 region_enabled = true
 region_rect = Rect2(96, 96, 32, 32)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1345836357]
 position = Vector2(-0.5, -4.5)
 shape = SubResource("RectangleShape2D_6gypx")
